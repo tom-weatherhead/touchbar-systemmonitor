@@ -103,7 +103,7 @@ const updateData = () => {
 				cpu.backgroundColor = LOAD_MEDIUM;
 			} else if (load <= 80) {
 				cpu.backgroundColor = LOAD_HIGH;
-			} else if (load <= 100) {
+			} else {
 				cpu.backgroundColor = LOAD_SEVERE;
 			}
 		}
@@ -125,7 +125,7 @@ const updateData = () => {
 				memory.backgroundColor = LOAD_MEDIUM;
 			} else if (load <= 80) {
 				memory.backgroundColor = LOAD_HIGH;
-			} else if (load <= 100) {
+			} else {
 				memory.backgroundColor = LOAD_SEVERE;
 			}
 		}
@@ -188,7 +188,7 @@ const updateData = () => {
 				battery.backgroundColor = LOAD_HIGH;
 			} else if (load <= 80) {
 				battery.backgroundColor = LOAD_MEDIUM;
-			} else if (load <= 100) {
+			} else {
 				battery.backgroundColor = LOAD_NORMAL;
 			}
 		}
@@ -198,9 +198,18 @@ const updateData = () => {
 	});
 
 	si.cpuTemperature().then((data) => {
-		// console.log('cpuTemperature:', data);
+		console.log('cpuTemperature:', data);
 		// console.log('Max cpuTemperature:', data.max);
-		cpuTemperature.label = `CPU ${data.max} C`;
+		let str = `CPU m${data.max}C`;
+
+		if (data.cores.length > 0) {
+			const sum = data.cores.reduce((a, b) => a + b, 0);
+			const avg = Math.round(sum / data.cores.length);
+
+			str += ` a${avg}C`;
+		}
+
+		cpuTemperature.label = str;
 	}).catch((error) => {
 		console.error('si.cpuTemperature() error:', error);
 		app.quit();
@@ -220,20 +229,7 @@ const activitymonitor = new TouchBarButton({
 const touchBar = new TouchBar({
 	items: [
 		cpu,
-		// new TouchBarLabel({
-		// 	label: 'Red',
-		// 	textColor: '#FF0000'
-		// }),
 		new TouchBarSpacer({ size: 'small' }),
-		// new TouchBarLabel({
-		// 	label: 'Green',
-		// 	textColor: '#00FF00'
-		// }),
-		// new TouchBarSpacer({ size: 'small' }),
-		// new TouchBarLabel({
-		// 	label: 'Blue',
-		// 	textColor: '#0000FF'
-		// }) // ,
 		memory,
 		new TouchBarSpacer({size: 'small'}),
 		network,
@@ -291,7 +287,7 @@ app.whenReady().then(() => {
 		app.quit();
 	});
 
-	// app.dock.hide();
+	app.dock.hide();
 })
 
 app.on('window-all-closed', () => {
