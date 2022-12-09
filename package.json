@@ -2,9 +2,24 @@
 	"name": "touchbar-systemmonitor",
 	"version": "0.0.2",
 	"description": "A system monitor in Apple MacBook Pro touch bar -- use it with commmand: CommandOrControl+Shift+1",
+	"private": false,
+	"homepage": "https://github.com/tom-weatherhead/touchbar-systemmonitor#readme",
+	"repository": "github:tom-weatherhead/touchbar-systemmonitor",
+	"bugs": {
+		"url": "https://github.com/tom-weatherhead/touchbar-systemmonitor/issues"
+	},
 	"main": "src/main.js",
-	"engines": {
-		"node": ">=18"
+	"scripts": {
+		"start": "electron .",
+		"pack": "electron-builder --dir",
+		"dist": "electron-builder"
+	},
+	"build": {
+		"appId": "Touch Bar System Monitor",
+		"mac": {
+			"target": "dmg",
+			"icon": "src/icons/icon.icns"
+		}
 	},
 	"dependencies": {
 		"electron": "^22.0.0",
@@ -14,22 +29,27 @@
 	"devDependencies": {
 		"@electron/rebuild": "^3.2.9"
 	},
-	"scripts": {
-		"start": "electron .",
-		"pack": "electron-builder --dir",
-		"dist": "electron-builder"
+	"engines": {
+		"node": ">= 18"
 	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/spagnuolocarmine/touchbar-systemmonitor.git"
-	},
-	"author": "Carmine Spagnuolo",
-	"license": "MIT",
-	"build": {
-		"appId": "Touch Bar System Monitor",
-		"mac": {
-			"target": "dmg",
-			"icon": "src/icons/icon.icns"
-		}
-	}
+	"os": [
+		"darwin"
+	],
+	"cpu": [
+		"arm",
+		"x64"
+	],
+	"author": "Tom Weatherhead <thaw@2hrd4u.org> (https://github.com/tom-weatherhead)",
+	"contributors": [
+		"Anonymous <conspirator@deep.state.gov>",
+		"Assimilated Captain <locutus@b.org>",
+		"Austin James <president@warehouse.serendip.com>",
+		"Autonomous Weapons Systems Unlimited <killer@robots.com>",
+		"Buddy Guy <deadbeef@decafbad.gov>",
+		"Carmine Spagnuolo",
+		"Deprecated <deadc0de@obso1337.org>",
+		"Loitering Munition <smart@bom.com>",
+		"Sgt. Pepper <shoot1st@thinkl8r.mil>"
+	],
+	"license": "MIT"
 }
