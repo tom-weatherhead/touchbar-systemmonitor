@@ -1,6 +1,6 @@
 {
 	"name": "touchbar-systemmonitor",
-	"version": "0.0.2",
+	"version": "0.0.0",
 	"description": "A system monitor in Apple MacBook Pro touch bar -- use it with commmand: CommandOrControl+Shift+1",
 	"private": false,
 	"homepage": "https://github.com/tom-weatherhead/touchbar-systemmonitor#readme",
