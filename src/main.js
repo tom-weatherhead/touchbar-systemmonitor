@@ -1,3 +1,5 @@
+// touchbar-systemmonitor/src/main.js
+
 // After 'npm i', do this: $ npx electron-rebuild
 // This rebuilds osx-temperature-sensor in order to avoid NODE_MODULE_VERSION conflicts between Electron and Node.js
 
@@ -37,60 +39,43 @@ const memory = new TouchBarButton({
 	label: '',
 	backgroundColor: "#bdc3c7",
 	icon: path.join(__dirname, 'icons/ram.png'),
-	iconPosition: "left" // ,
-	// click: () => {
-	// 	updateData();
-	// }
+	iconPosition: "left"
 });
 
-const network = new TouchBarButton({
-	label: '',
-	backgroundColor: '#3498db',
-	icon: path.join(__dirname, 'icons/internet.png'),
-	iconPosition: "left",
-	click: () => {
-		updateData();
-	}
-});
+// const network = new TouchBarButton({
+// 	label: '',
+// 	backgroundColor: '#3498db',
+// 	icon: path.join(__dirname, 'icons/internet.png'),
+// 	iconPosition: "left"
+// });
 
 const battery = new TouchBarButton({
 	label: '',
 	backgroundColor: "#bdc3c7",
 	icon: path.join(__dirname, 'icons/power.png'),
-	iconPosition: "left" // ,
-	// click: () => {
-	// 	updateData();
-	// }
+	iconPosition: "left"
 });
 
 const disk = new TouchBarButton({
 	label: '',
 	backgroundColor: "#9b59b6",
 	icon: path.join(__dirname, 'icons/hard-disk-drive.png'),
-	iconPosition: "left" // ,
-	// click: () => {
-	// 	updateData();
-	// }
+	iconPosition: "left"
 });
 
 const cpuTemperature = new TouchBarButton({
 	label: 'Temp',
 	backgroundColor: "#c00000" // ,
 	// icon: path.join(__dirname, 'icons/???.png'),
-	// iconPosition: "left",
-	// click: () => {
-	// 	updateData();
-	// }
+	// iconPosition: "left"
 });
 
 const updateData = () => {
-	// console.log('updateData');
 
 	si.currentLoad().then((data) => {
 
 		if (typeof data !== 'undefined' && data && typeof data.currentLoad !== 'undefined' && data.currentLoad !== null) {
-			const load = data.currentLoad.toFixed(0);
-			// const load = Math.round(data.currentLoad);
+			const load = data.currentLoad.toFixed(0); // Is data.currentLoad a percentage?
 
 			cpu.label = load + "%";
 
@@ -103,6 +88,9 @@ const updateData = () => {
 			} else {
 				cpu.backgroundColor = LOAD_SEVERE;
 			}
+		} else {
+			cpu.label = '??? %';
+			cpu.backgroundColor = '#808080';
 		}
 	}).catch((error) => {
 		console.error('si.currentLoad() error:', error);
@@ -117,50 +105,57 @@ const updateData = () => {
 
 			memory.label = load + "%";
 
-			if (load <= 20) {
+			if (load <= 50) {
 				memory.backgroundColor = LOAD_NORMAL;
-			} else if (load <= 40) {
+			} else if (load <= 70) {
 				memory.backgroundColor = LOAD_MEDIUM;
-			} else if (load <= 80) {
+			} else if (load <= 90) {
 				memory.backgroundColor = LOAD_HIGH;
 			} else {
 				memory.backgroundColor = LOAD_SEVERE;
 			}
+		} else {
+			memory.label = '??? %';
+			memory.backgroundColor = '#808080';
 		}
 	}).catch((error) => {
 		console.error('si.mem() error:', error);
 		app.quit();
 	});
 
-	si.networkStats("").then((data) => {
-		// console.log('si.networkStats : data is', data);
+	// si.networkStats("").then((data) => {
+	// 	// console.log('si.networkStats : data is', data);
 
-		if (typeof data !== 'undefined' && data) {
-			const kbtx = (data[0].tx_sec * 0.001).toFixed(0);
-			const kbrx = (data[0].rx_sec * 0.001).toFixed(0);
+	// 	if (typeof data !== 'undefined' && data) {
+	// 		const kbtx = (data[0].tx_sec * 0.001).toFixed(0);
+	// 		const kbrx = (data[0].rx_sec * 0.001).toFixed(0);
 
-			// const l = (kbtx+kbrx).toString().length;
-
-			network.label = "⇡" + (kbtx * 0.001).toFixed(2) + " ⇣" + (kbrx * 0.001).toFixed(2) + " MB/s";
-		}
-	}).catch((error) => {
-		console.error('si.networkStats() error:', error);
-		app.quit();
-	});
+	// 		network.label = "⇡" + (kbtx * 0.001).toFixed(2) + " ⇣" + (kbrx * 0.001).toFixed(2) + " MB/s";
+	// 	} else {
+	// 		network.label = '???';
+	// 		network.backgroundColor = '#808080';
+	// 	}
+	// }).catch((error) => {
+	// 	console.error('si.networkStats() error:', error);
+	// 	app.quit();
+	// });
 
 	si.disksIO().then((data) => {
-		// console.log('si.disksIO : data is', data);
+		console.log('si.disksIO : data is', data);
 
 		if (typeof data !== 'undefined' && data && typeof data.tIO_sec !== 'undefined' && data.tIO_sec !== null) {
 			const load = data.tIO_sec.toFixed(0);
-			const more = 4 - load.toString().length;
-			let tomore = "";
+			// const more = 4 - load.toString().length;
+			// let tomore = "";
 
-			for (let i = 0; i < more; i++) {
-				tomore += "0";
-			}
+			// for (let i = 0; i < more; i++) {
+			// 	tomore += "0";
+			// }
 
-			disk.label = tomore + load + "/s";
+			// disk.label = tomore + load + "/s";
+			disk.label = ('000' + load).slice(-4) + "/s";
+		} else {
+			disk.label = '???';
 		}
 	}).catch((error) => {
 		console.error('si.disksIO() error:', error);
@@ -173,25 +168,26 @@ const updateData = () => {
 		if (typeof data !== 'undefined' && data) {
 			battery.icon = path.join(__dirname, 'icons', data.isCharging ? 'charger.png' : 'power.png');
 
-			let load = data.percent.toFixed(0);
+			let batteryPercentCharged = data.percent.toFixed(0);
 
-			if (load < 0) {
-				load = 0;
-			} else if (load > 100) {
-				load = 100;
+			if (batteryPercentCharged < 0) { // Clamp
+				batteryPercentCharged = 0;
+			} else if (batteryPercentCharged > 100) {
+				batteryPercentCharged = 100;
 			}
 
-			battery.label = load + '%';
+			battery.label = batteryPercentCharged + '%';
 
-			const g = Math.round(load * 255 / 100);
+			// batteryPercentCharged === 0 -> red; batteryPercentCharged == 100 -> green
+			const g = Math.round(batteryPercentCharged * 255 / 100);
 			const gg = ('0' + g.toString(16)).slice(-2);
 			const rr = ('0' + (255 - g).toString(16)).slice(-2);
 
-			// if (load <= 20) {
+			// if (batteryPercentCharged <= 20) {
 			// 	battery.backgroundColor = LOAD_SEVERE;
-			// } else if (load <= 40) {
+			// } else if (batteryPercentCharged <= 40) {
 			// 	battery.backgroundColor = LOAD_HIGH;
-			// } else if (load <= 80) {
+			// } else if (batteryPercentCharged <= 80) {
 			// 	battery.backgroundColor = LOAD_MEDIUM;
 			// } else {
 			// 	battery.backgroundColor = LOAD_NORMAL;
@@ -199,6 +195,9 @@ const updateData = () => {
 
 			battery.backgroundColor = `#${rr}${gg}00`;
 			// console.log('battery.backgroundColor is', battery.backgroundColor);
+		} else {
+			battery.label = '??? %';
+			battery.backgroundColor = '#808080';
 		}
 	}).catch((error) => {
 		console.error('si.battery() error:', error);
@@ -207,18 +206,40 @@ const updateData = () => {
 
 	si.cpuTemperature().then((data) => {
 		// console.log('cpuTemperature:', data);
-		// console.log('Max cpuTemperature:', data.max);
 
-		let str = `Temp m${data.max}C`;
+		if (typeof data !== 'undefined' && data && typeof data.max !== 'undefined') {
+			// console.log('Max cpuTemperature:', data.max);
 
-		if (data.cores.length > 0) {
-			const sum = data.cores.reduce((a, b) => a + b, 0);
-			const avg = Math.round(sum / data.cores.length);
+			let str = `Temp m${data.max}C`;
 
-			str += ` a${avg}C`;
+			if (data.cores.length > 0) {
+				const sum = data.cores.reduce((a, b) => a + b, 0);
+				const avg = Math.round(sum / data.cores.length);
+
+				str += ` a${avg}C`;
+			}
+
+			cpuTemperature.label = str;
+
+			if (data.max < 45) {
+				cpuTemperature.backgroundColor = '#000000'; // Black
+			} else if (data.max < 50) {
+				cpuTemperature.backgroundColor = '#0000ff'; // Blue
+			} else if (data.max < 55) {
+				cpuTemperature.backgroundColor = '#00ffff'; // Cyan
+			} else if (data.max < 60) {
+				cpuTemperature.backgroundColor = '#00ff00'; // Green
+			} else if (data.max < 65) {
+				cpuTemperature.backgroundColor = '#ffff00'; // Yellow
+			} else if (data.max < 70) {
+				cpuTemperature.backgroundColor = '#ff0000'; // Red
+			} else {
+				cpuTemperature.backgroundColor = '#ff00ff'; // Magenta (or white?)
+			}
+		} else {
+			cpuTemperature.label = '???';
+			cpuTemperature.backgroundColor = '#808080';
 		}
-
-		cpuTemperature.label = str;
 	}).catch((error) => {
 		console.error('si.cpuTemperature() error:', error);
 		app.quit();
@@ -237,10 +258,7 @@ const updateData = () => {
 const escapeItem = new TouchBarButton({
 	label: 'esc',
 	backgroundColor: "#34495e",
-	// icon: path.join(__dirname, 'icons/activity.png'),
-	// iconPosition: "center",
 	click: () => {
-		// spawn("/System/Applications/Utilities/Activity Monitor.app/Contents/MacOS/Activity\ Monitor", []);
 		app.quit();
 	}
 });
@@ -250,13 +268,13 @@ const touchBar = new TouchBar({
 		cpu,
 		new TouchBarSpacer({ size: 'small' }),
 		memory,
-		new TouchBarSpacer({size: 'small'}),
-		network,
-		new TouchBarSpacer({size: 'small'}),
-		// disk,
-		// new TouchBarSpacer({size: 'small'}),
+		new TouchBarSpacer({ size: 'small' }),
+		// network,
+		// new TouchBarSpacer({ size: 'small' }),
+		disk,
+		new TouchBarSpacer({ size: 'small' }),
 		battery,
-		new TouchBarSpacer({size: 'small'}),
+		new TouchBarSpacer({ size: 'small' }),
 		cpuTemperature
 	],
 	// escapeItem: activitymonitor
