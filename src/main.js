@@ -14,6 +14,17 @@ const { TouchBarButton, /* TouchBarLabel, */ TouchBarSpacer } = TouchBar;
 
 let window;
 
+// From thaw-colour :
+const colourRed		= '#ff0000';
+const colourOrange	= '#ffa500'; // [255, 165, 0]
+const colourYellow	= '#ffff00';
+const colourGreen	= '#008000';
+const colourBlue	= '#0000ff';
+const colourIndigo	= '#4b0082'; // [75, 0, 130]
+const colourViolet	= '#ee82ee'; // [238, 130, 238]
+
+const colourGrey	= '#808080';
+
 const LOAD_NORMAL = "#2ecc71";
 const LOAD_MEDIUM = "#f1c40f";
 const LOAD_HIGH = "#d35400";
@@ -22,9 +33,9 @@ const LOAD_SEVERE = "#e74c3c";
 const cpu = new TouchBarButton({
 	label: 'CPU',
 	backgroundColor: "#bdc3c7",
-	icon: path.join(__dirname, 'icons/chip.png'),
+	icon: path.join(__dirname, 'icons', 'chip.png'),
 	// icon: nativeImage
-	// 	.createFromPath(path.join(__dirname, 'icons/chip.png'))
+	// 	.createFromPath(path.join(__dirname, 'icons', 'chip.png'))
 	// 	.resize({
 	// 		width: 16,
 	// 		height: 16
@@ -38,35 +49,35 @@ const cpu = new TouchBarButton({
 const memory = new TouchBarButton({
 	label: '',
 	backgroundColor: "#bdc3c7",
-	icon: path.join(__dirname, 'icons/ram.png'),
+	icon: path.join(__dirname, 'icons', 'ram.png'),
 	iconPosition: "left"
 });
 
 // const network = new TouchBarButton({
 // 	label: '',
 // 	backgroundColor: '#3498db',
-// 	icon: path.join(__dirname, 'icons/internet.png'),
+// 	icon: path.join(__dirname, 'icons', 'internet.png'),
 // 	iconPosition: "left"
 // });
 
 const battery = new TouchBarButton({
 	label: '',
 	backgroundColor: "#bdc3c7",
-	icon: path.join(__dirname, 'icons/power.png'),
+	icon: path.join(__dirname, 'icons', 'power.png'),
 	iconPosition: "left"
 });
 
 const disk = new TouchBarButton({
 	label: '',
 	backgroundColor: "#9b59b6",
-	icon: path.join(__dirname, 'icons/hard-disk-drive.png'),
+	icon: path.join(__dirname, 'icons', 'hard-disk-drive.png'),
 	iconPosition: "left"
 });
 
 const cpuTemperature = new TouchBarButton({
 	label: 'Temp',
 	backgroundColor: "#c00000" // ,
-	// icon: path.join(__dirname, 'icons/???.png'),
+	// icon: path.join(__dirname, 'icons', '???.png'),
 	// iconPosition: "left"
 });
 
@@ -90,7 +101,7 @@ const updateData = () => {
 			}
 		} else {
 			cpu.label = '??? %';
-			cpu.backgroundColor = '#808080';
+			cpu.backgroundColor = colourGrey;
 		}
 	}).catch((error) => {
 		console.error('si.currentLoad() error:', error);
@@ -116,7 +127,7 @@ const updateData = () => {
 			}
 		} else {
 			memory.label = '??? %';
-			memory.backgroundColor = '#808080';
+			memory.backgroundColor = colourGrey;
 		}
 	}).catch((error) => {
 		console.error('si.mem() error:', error);
@@ -131,9 +142,10 @@ const updateData = () => {
 	// 		const kbrx = (data[0].rx_sec * 0.001).toFixed(0);
 
 	// 		network.label = "⇡" + (kbtx * 0.001).toFixed(2) + " ⇣" + (kbrx * 0.001).toFixed(2) + " MB/s";
+	//		network.backgroundColor = '#3498db';
 	// 	} else {
 	// 		network.label = '???';
-	// 		network.backgroundColor = '#808080';
+	// 		network.backgroundColor = colourGrey;
 	// 	}
 	// }).catch((error) => {
 	// 	console.error('si.networkStats() error:', error);
@@ -141,7 +153,7 @@ const updateData = () => {
 	// });
 
 	si.disksIO().then((data) => {
-		console.log('si.disksIO : data is', data);
+		// console.log('si.disksIO : data is', data);
 
 		if (typeof data !== 'undefined' && data && typeof data.tIO_sec !== 'undefined' && data.tIO_sec !== null) {
 			const load = data.tIO_sec.toFixed(0);
@@ -154,8 +166,10 @@ const updateData = () => {
 
 			// disk.label = tomore + load + "/s";
 			disk.label = ('000' + load).slice(-4) + "/s";
+			// disk.backgroundColor = ?;
 		} else {
 			disk.label = '???';
+			// disk.backgroundColor = colourGrey;
 		}
 	}).catch((error) => {
 		console.error('si.disksIO() error:', error);
@@ -197,7 +211,7 @@ const updateData = () => {
 			// console.log('battery.backgroundColor is', battery.backgroundColor);
 		} else {
 			battery.label = '??? %';
-			battery.backgroundColor = '#808080';
+			battery.backgroundColor = colourGrey;
 		}
 	}).catch((error) => {
 		console.error('si.battery() error:', error);
@@ -222,23 +236,23 @@ const updateData = () => {
 			cpuTemperature.label = str;
 
 			if (data.max < 45) {
-				cpuTemperature.backgroundColor = '#000000'; // Black
+				cpuTemperature.backgroundColor = colourViolet; // '#000000'; // Black
 			} else if (data.max < 50) {
-				cpuTemperature.backgroundColor = '#0000ff'; // Blue
+				cpuTemperature.backgroundColor = colourIndigo; // '#0000ff'; // Blue
 			} else if (data.max < 55) {
-				cpuTemperature.backgroundColor = '#00ffff'; // Cyan
+				cpuTemperature.backgroundColor = colourBlue; // '#00ffff'; // Cyan
 			} else if (data.max < 60) {
-				cpuTemperature.backgroundColor = '#00ff00'; // Green
+				cpuTemperature.backgroundColor = colourGreen; // '#00ff00'; // Green
 			} else if (data.max < 65) {
-				cpuTemperature.backgroundColor = '#ffff00'; // Yellow
+				cpuTemperature.backgroundColor = colourYellow; // '#ffff00'; // Yellow
 			} else if (data.max < 70) {
-				cpuTemperature.backgroundColor = '#ff0000'; // Red
+				cpuTemperature.backgroundColor = colourOrange; // '#ff0000'; // Red
 			} else {
-				cpuTemperature.backgroundColor = '#ff00ff'; // Magenta (or white?)
+				cpuTemperature.backgroundColor = colourRed; // '#ff00ff'; // Magenta (or white?)
 			}
 		} else {
 			cpuTemperature.label = '???';
-			cpuTemperature.backgroundColor = '#808080';
+			cpuTemperature.backgroundColor = colourGrey;
 		}
 	}).catch((error) => {
 		console.error('si.cpuTemperature() error:', error);
@@ -249,7 +263,7 @@ const updateData = () => {
 // const activitymonitor = new TouchBarButton({
 // 	label: '',
 // 	backgroundColor: "#34495e",
-// 	icon: path.join(__dirname, 'icons/activity.png'),
+// 	icon: path.join(__dirname, 'icons', 'activity.png'),
 // 	iconPosition: "center",
 // 	click: () => {
 // 		spawn("/System/Applications/Utilities/Activity Monitor.app/Contents/MacOS/Activity\ Monitor", []);
@@ -284,7 +298,7 @@ const touchBar = new TouchBar({
 let intervalObj;
 
 const focusOnWindow = () => {
-	console.log('focusOnWindow');
+	// console.log('focusOnWindow');
 	window.show();
 	window.setVisibleOnAllWorkspaces(true);
 	window.focus();
